@@ -1,6 +1,8 @@
 from datetime import date
 
-from fastapi import FastAPI
+
+from fastapi import FastAPI, HTTPException
+from fastapi.openapi.models import Response
 from pydantic import BaseModel
 
 from transactions import transactions
@@ -29,6 +31,16 @@ def get_transactions():
     return transactions
 
 @app.post("/transactions", status_code=201)
-
 def add_transaction(transaction: BaseTransaction):
     return transaction
+
+@app.get("/transactions/{transaction_id}", status_code=200)
+def get_transaction_by_id(transaction_id: int):
+    transaction = [transaction for transaction in transactions if transaction.get("id") == transaction_id]
+    if transaction:
+            return transaction
+
+    raise HTTPException(
+        status_code=404,
+        detail="Transaction not found"
+    )
