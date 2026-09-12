@@ -22,6 +22,10 @@ class BaseTransaction(BaseModel):
     account: str
     category: str
 
+class PatchTransaction(BaseModel):
+    description: str = None
+    amount: float | int  = None
+
 @app.get("/health", status_code=200)
 def check_health():
     return {"message": "success"}
@@ -38,7 +42,24 @@ def add_transaction(transaction: BaseTransaction):
 def get_transaction_by_id(transaction_id: int):
     transaction = [transaction for transaction in transactions if transaction.get("id") == transaction_id]
     if transaction:
-            return transaction
+            return transaction[0]
+
+    raise HTTPException(
+        status_code=404,
+        detail="Transaction not found"
+    )
+
+@app.patch("/transactions/{transaction_id}", status_code=200)
+def update_transaction_feature_by_id(transaction_id: int, transaction: PatchTransaction):
+    transaction_chosen = [transaction for transaction in transactions if transaction.get("id") == transaction_id]
+
+    if transaction_chosen:
+        keys_to_update = transaction.model_dump(exclude_unset=True)
+
+        if keys_to_update:
+            transaction_chosen[0].update(keys_to_update)
+
+        return transaction_chosen[0]
 
     raise HTTPException(
         status_code=404,
