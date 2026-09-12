@@ -50,7 +50,7 @@ def get_transaction_by_id(transaction_id: int):
     )
 
 @app.patch("/transactions/{transaction_id}", status_code=200)
-def update_transaction_feature_by_id(transaction_id: int, transaction: PatchTransaction):
+def update_transaction_prop_by_id(transaction_id: int, transaction: PatchTransaction):
     transaction_chosen = [transaction for transaction in transactions if transaction.get("id") == transaction_id]
 
     if transaction_chosen:
